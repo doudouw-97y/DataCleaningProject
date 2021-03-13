@@ -3,7 +3,7 @@
     "path": "C:/Files/Short/Clara/Coursera/DataScience_JH/data_cleaning_w4/Project/run_analysis.R",
     "project_path": "run_analysis.R",
     "type": "r_source",
-    "hash": "612320744",
+    "hash": "0",
     "contents": "",
     "dirty": false,
     "created": 1615592925861.0,
@@ -13,15 +13,15 @@
         "tempName": "Untitled1",
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "67,0",
+        "cursorPosition": "49,7",
         "scrollLine": "21"
     },
     "folds": "21|68|34|0|\n",
-    "lastKnownWriteTime": 1615615999,
+    "lastKnownWriteTime": 1615616375,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1615615999113,
+    "last_content_update": 1615616375148,
     "read_only": false,
     "read_only_alternatives": []
 }
