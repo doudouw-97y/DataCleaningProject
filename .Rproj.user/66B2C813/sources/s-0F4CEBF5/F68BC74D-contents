@@ -64,5 +64,4 @@ avg_df <- new_mean_std %>% group_by(Subject_ID, Activity_name) %>% summarise_all
 
 # Step 7
 ## Save tidy data set to file
-write.table(avg_df, "tidy_data.txt", quote = F)
-csv(avg_df, "tidy_data.csv")
+write.csv(avg_df, "tidy_data.csv")

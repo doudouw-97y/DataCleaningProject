@@ -59,5 +59,9 @@ cname <- gsub("mean\\(\\)", "Mean", cname, perl = TRUE)
 cname <- gsub("std\\(\\)", "StandardDeviation", cname, perl = TRUE)
 
 # Step 6
-## creating a second, independent tidy data set with the average of each variable for each activity and each subject
+## Creating a second, independent tidy data set with the average of each variable for each activity and each subject
 avg_df <- new_mean_std %>% group_by(Subject_ID, Activity_name) %>% summarise_all(mean)
+
+# Step 7
+## Save tidy data set to file
+write.csv(avg_df, "tidy_data.csv")
