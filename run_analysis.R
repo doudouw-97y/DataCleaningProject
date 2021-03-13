@@ -49,14 +49,14 @@ new_mean_std <- mean_std %>% select(Subject_ID, Activity_name, everything(),  -L
 
 #Step 5
 ## Appropriately labels the data set with descriptive variable names.
-cname <- names(new_mean_std)
-cname <- gsub("^t", "TimeDomain", cname)
-cname <- gsub("^f", "FrequencyDomain", cname)
-cname <- gsub("Acc(?!e)", "Acceleration", cname, perl = TRUE)
-cname <- gsub("Mag(?!n)", "Magnitude", cname, perl = TRUE)
-cname <- gsub("Gyro", "AngularVelocity", cname, perl = TRUE)
-cname <- gsub("mean\\(\\)", "Mean", cname, perl = TRUE)
-cname <- gsub("std\\(\\)", "StandardDeviation", cname, perl = TRUE)
+names(new_mean_std) <- names(new_mean_std)
+names(new_mean_std) <- gsub("^t", "TimeDomain", names(new_mean_std))
+names(new_mean_std) <- gsub("^f", "FrequencyDomain", names(new_mean_std))
+names(new_mean_std) <- gsub("Acc(?!e)", "Acceleration", names(new_mean_std), perl = TRUE)
+names(new_mean_std) <- gsub("Mag(?!n)", "Magnitude", names(new_mean_std), perl = TRUE)
+names(new_mean_std) <- gsub("Gyro", "AngularVelocity", names(new_mean_std), perl = TRUE)
+names(new_mean_std) <- gsub("mean\\(\\)", "Mean", names(new_mean_std), perl = TRUE)
+names(new_mean_std) <- gsub("std\\(\\)", "StandardDeviation", names(new_mean_std), perl = TRUE)
 
 # Step 6
 ## Creating a second, independent tidy data set with the average of each variable for each activity and each subject
