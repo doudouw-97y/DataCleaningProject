@@ -1,0 +1,297 @@
+---
+title: "Data_cleaning_W4"
+author: "Doudou"
+date: "10/03/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Editing text variables
+
+Load data
+```{r cameras}
+filePath <- r"(C:/Files/Short/Clara/Coursera/DataScience_JH/data_cleaning_w4/data/cameras.csv)"
+cameraData <- read.csv(filePath)
+names(cameraData)
+```
+### lower and upper case
+Make all the letters lower case, similarly there is toupper().
+```{r lower cases}
+tolower(names(cameraData))
+```
+
+### split strings
+Split variable names via strsplit()
+```{r splitting}
+splitNames = strsplit(names(cameraData), "\\.")
+splitNames
+```
+```{r list review: generate list}
+mylist <- list(letters = c("A","b","c"), numbers = 1:3, matrix(1:25, ncol = 5))
+head(mylist)
+```
+
+```{r list review: indexing list}
+mylist[1]
+mylist$letters
+mylist[[1]]
+```
+```{r split and extract}
+splitNames[[1]][3]
+```
+```{r apply to all}
+getElement <- function(x) {if (length(x) ==1) x else x[3]}
+sapply(splitNames, getElement)
+```
+### substituting with sub() and gsub()
+sub will only replace the first instance of the pattern.
+```{r sub}
+testName <- "this_is_a_test"
+sub("_", "", testName)
+```
+gusb() can replace all instances.
+```{r gsub}
+gsub("_", "", testName)
+
+```
+### searching for values with grep() and grepl()
+
+```{r grep}
+grep("Alameda", cameraData$intersecti)
+```
+grepl() return logic vectors where TRUE if the element is the search string, else otherwise.
+```{r grepl}
+table(grepl("Alameda", cameraData$intersecti))
+```
+
+grepl() can be used to subset dataframes. grep() too.    
+Below is an example where the subset data is intersetiion not "Alameda".    
+Notice that, for grepl "!" is used as it returns logical vectors; for grep() "-" is used as it returns index numbers.    
+```{r subsetting}
+identical(cameraData[!grepl("Alameda", cameraData$intersecti),], cameraData[-grep("Alameda", cameraData$intersecti),])
+
+```
+More on grep()
+
+Can set it to return values instead of index.    
+```{r grep values}
+grep("Alameda",  cameraData$intersecti, value = TRUE)
+```
+Look for values don't appear, it will return integer(0) instead of Na or error.    
+It's a nice way to check if a value appears in the dataset by checking if its length is o.    
+```{r unknown values}
+grep("HeffStreet", cameraData$intersecti)
+length(grep("HeffStreet", cameraData$intersecti))
+```
+
+### more useful string functions
+```{r stringr}
+library(stringr)
+# return number of characters
+nchar("heffrey leek") 
+
+# indexing string from 1st to 7th character
+substr("heffrey leek", 1,7) 
+
+# can set sep = "" or other things
+paste("heffrey", "leek") 
+
+# paste strings with no separators
+paste0("heffrey", "leek") 
+
+# trim off excess space in the end of a string
+str_trim("heff          ") 
+```
+
+## Regular Expressions
+
+### Literals
+The literal "nuclear" would match exactly to "nuclear" in lines.
+
+### Metacharacters
+
+* match start of the line:  
+  + \^i think
+
+* match end of the line:  
+  + morning$
+
+* We can list a set of characters we will accept at a given point in the match:  
+  + [Bb][Uu][Ss][Hh]  
+  + so any form of bush such as "bUsH", "buSh", etc. will be matched.  
+
+* Combining metacharacters:  
+  + \^[Ii] am  
+
+* Specify range of letters or numbers:  
+  + \^[0-9][a-zA-Z]  
+  + will match: 7th inning stretch; 2nd half; etc.  
+
+* When used at the beginning of a character class, \^ is also a metacharacter that indicates matching characters NOT in the indicated class:  
+  + [\^?.]$  
+  + So this will match any lines that not ends with "?" or "."  
+
+### More metacharacters
+
+* "." is used to refer to any character:  
+  + 9.11 would match to "9_11", "9:11","9a11" etc.  
+
+* "or" metacharacter: | to match with alternatives:  
+  +  food|fire  
+  + will match either food or fire.  
+
+* The alternatives can also be expressions, not just literals:  
+  + \^[Gg]ood|[Bb]ad  
+  + will match beginning the line is good, or the line contains bad.  
+  + Also, can use parenthesis to contrain, such as \^([Gg]ood|[Bb]ad)  
+
+* question mark "?" that follows a parenthesisindicates that the indicated expression is optional:  
+  + [Gg]eorge( [Ww]\.)? [Bb]ush  
+  + It can match: george bush, George W. Bush, george bushes, etc.   
+  + (by adding \, we are saying don't consider "." as metacharacter, but as literal dot.)  
+
+* the * and + signs indicate repetition:  
+  + \* means repeat any number of times including none of the item  
+  + (.*)  
+  + we are searching for something between parentheses, and it can be any character repeated any number of times.  
+  + e.g. (24,m,germany), ( east area + ...), (), etc.  
+
+* \+ indicate at least one of the item:  
+  + [0-9]+ (.*)[0-9]+  
+  + it means a number (with at least one digit), follwed by any character, followed by another number.  
+
+* {} are referred to as interval quantifiers:  
+  + [Bb]ush( +[\^ ]+ +){1,5} debate  
+  + we are looking for: "Bbush" followed by, (at least one space, then something that is not space, then at least one space) occurring for at least 1 matches and at most 5 matches  
+  + m,n means m<= <=n  
+  + m means exactly m matches  
+  + m, means at least m matches  
+
+
+* () not only limit the scope of alternatives divided by a "|", but also can be used to remember text matched by the subexpression enclosed. We refer to matched text with \1,\2, etc.  
+  +  \+([a-zA-Z]+) +\1 +  
+  + so it looks for: at least one space, some word, at least a space, same word as previous word in parentesis, then at least one space. E.g."time for bed, night night twitter!", "my tatoo is so so itchy today", etc.  
+
+* The "*" is "greedy" so it always matches the longest possible string that satisfies the regular expression:  
+  + \^s(.*)s  
+  + matches:  
+    + sitting at starbucks  
+    + setting up mysql and rails  
+    + studying stuffs for the exams  
+
+* So even if there are s in the middle, this expression will always try to match the maximum length.  
+To turn off the greediness of " can use ?, such as  
+  + \^s(.*?)s$  
+
+## Dates
+
+```{r}
+d1 = date()
+d1
+class(d1)
+```
+
+```{r}
+d2 = Sys.Date()
+d2
+class(d2)
+```
+### Formatting dates
+%d = day as number (0-31)  
+%a = abbreviated weekday  
+%A = unabbreviated weekday  
+%m = month  
+%b = abbreviated month  
+%y = 2 digit year  
+%Y = 4 digit year  
+```{r}
+format(d2, "%a %b %d")
+```
+### creating dates
+```{r}
+x = c("1jan1960", "31mar1960"); z = as.Date(x, "%d%b%Y")
+z
+```
+
+```{r}
+z[1]-z[2]
+as.numeric(z[1]-z[2])
+```
+### Coverting to Julian
+```{r}
+weekdays(d2)
+months(d2)
+julian(d2) # number of days since orgin
+```
+### Lubridate package
+```{r}
+library(lubridate)
+ymd("20140108")
+mdy("12/31/2013")
+dmy("03-04-2013")
+```
+### Dealing with times
+```{r}
+ymd_hms("20110803 b10:14:03")
+```
+Timezone:
+```{r}
+ymd_hms("20110803 b10:14:03", tz = "Australia/Melbourne")
+#?Sys.timezone
+
+#search specific time zones in the standard "base" R package
+grep("Melbourne", OlsonNames(), value=TRUE)
+```
+Some functions have slightly different syntax
+```{r}
+x = dmy(c("2jan2013","31mar2013"))
+wday(x[1])
+wday(x[1], label = TRUE)
+```
+
+## Data Resources
+* Open Government sites  
+http://data.un.org  
+http://www.data.gov/  
+ - List of cities/state with open data  
+http://data.gov.uk/  
+http://www.data.gov.fr/  
+http://data.gov.gh/  
+http://data.gov.au/  
+http://www.govdata.de/  
+http://www.gov.hk/en/theme/psi/datasets/  
+http://www.go.jp/  
+many more on http://www.data.gov/opendatasites  
+
+* Other:   
+human health development: http://www.gapminder.org/    
+survey data US: http://www.asdfree.com/  
+http://www.infochimps.com/marketplace  
+http://www.kaggle.com/  
+
+* Collection by data scientists:  
+Hillary Mason http://bitly.com/bundles/hmason/1  
+Peter Skomoroch htpps://delicious.com/pskomoroch/dataset  
+Jeff Hammerbacher http://www.quora.com/Jeff-Hammerbacher.Introduction-to-Data-Science-Data-Sets  
+George Piatetsky-Shapiro http://www.kdnuggets.com/gps.html  
+http://blog.mortardata.com/post/67652898761/6-dataset-lists-cyrated-by-data-scientists  
+
+* More specialized collections  
+Stanford large network data  
+UCI machine learning  
+KDD nugets datasets  
+CMU statlib  
+Gene expression omnibus  
+ArXiv Data  
+Public Data Sets on Amazon Web Services  
+
+* Some API's with R interfaces  
+twitter and twitteR package  
+figshare and rfigshare  
+PLoS and rplos  
+rOpenSci  
+Facebook and RFacebook  
+Google maps and RGoogleMaps  

@@ -1,0 +1,25 @@
+"0","library(lubridate)"
+"2","
+Attaching package: ‘lubridate’
+
+"
+"2","The following objects are masked from ‘package:base’:
+
+    date, intersect, setdiff, union
+
+"
+"0","ymd(""20140108"")"
+"1","[1]"
+"1"," ""2014-01-08"""
+"1","
+"
+"0","mdy(""12/31/2013"")"
+"1","[1]"
+"1"," ""2013-12-31"""
+"1","
+"
+"0","dmy(""03-04-2013"")"
+"1","[1]"
+"1"," ""2013-04-03"""
+"1","
+"

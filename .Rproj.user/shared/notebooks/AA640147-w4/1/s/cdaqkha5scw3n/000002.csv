@@ -1,0 +1,5 @@
+"0","identical(cameraData[!grepl(""Alameda"", cameraData$intersecti),], cameraData[-grep(""Alameda"", cameraData$intersecti),])"
+"1","[1]"
+"1"," TRUE"
+"1","
+"

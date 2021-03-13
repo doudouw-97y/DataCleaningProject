@@ -1,0 +1,63 @@
+library(dplyr)
+
+# Step 1
+## Download UCI HAR dataset
+url <- "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip"
+
+temp <- tempfile()
+download.file(url,temp)
+unzip(temp, exdir = ".")
+unlink(temp)
+
+# Step 2
+## Load info data.
+features <- read.table("./UCI HAR Dataset/features.txt", header = FALSE)
+names(features) <- c("feature_id", "feature_name")
+
+labels <- read.table("./UCI HAR Dataset/activity_labels.txt", header = FALSE)
+names(labels) <- c("Labels_ID", "Activity_name")
+
+## Load files into data frames for "test" and "train" data sets; 
+## Then merge to one data set.
+load_folder_merge <- function(group, folder = "./UCI HAR Dataset") {
+  
+  Xset <- read.table(file.path(folder, group, paste("X_", group, ".txt", sep = "")), header = FALSE)
+  names(Xset) <- features$feature_name
+  
+  Yset <- read.table(file.path(folder, group, paste("y_", group, ".txt", sep = "")), header = FALSE)
+  names(Yset) <- "Labels_ID"
+  
+  subject <- read.table(file.path(folder, group, paste("subject_", group, ".txt", sep = "")), header = FALSE)
+  names(subject) <- "Subject_ID"
+
+  merged <- cbind(subject, Yset, Xset)
+
+}
+
+TEST_merged <- load_folder_merge(group = "test")
+TRAIN_merged <- load_folder_merge(group = "train")
+FINAL_merged <- rbind(TEST_merged, TRAIN_merged)
+
+# Step 3
+## Extracting only the mean and standard deviation for each measurement
+mean_std <- FINAL_merged[,grep("mean\\(\\)|std\\(\\)|Subject|Labels", names(FINAL_merged))]
+
+# Step 4
+## Using descriptive activity names to name the activities in the data set
+mean_std = full_join(mean_std, labels, by = "Labels_ID")
+new_mean_std <- mean_std %>% select(Subject_ID, Activity_name, everything(),  -Labels_ID)
+
+#Step 5
+## Appropriately labels the data set with descriptive variable names.
+cname <- names(new_mean_std)
+cname <- gsub("^t", "TimeDomain", cname)
+cname <- gsub("^f", "FrequencyDomain", cname)
+cname <- gsub("Acc(?!e)", "Acceleration", cname, perl = TRUE)
+cname <- gsub("Mag(?!n)", "Magnitude", cname, perl = TRUE)
+cname <- gsub("Gyro", "AngularVelocity", cname, perl = TRUE)
+cname <- gsub("mean\\(\\)", "Mean", cname, perl = TRUE)
+cname <- gsub("std\\(\\)", "StandardDeviation", cname, perl = TRUE)
+
+# Step 6
+## creating a second, independent tidy data set with the average of each variable for each activity and each subject
+avg_df <- new_mean_std %>% group_by(Subject_ID, Activity_name) %>% summarise_all(mean)

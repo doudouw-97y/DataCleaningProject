@@ -1,0 +1,8 @@
+"0","grep(""HeffStreet"", cameraData$intersecti)"
+"1","integer(0)
+"
+"0","length(grep(""HeffStreet"", cameraData$intersecti))"
+"1","[1]"
+"1"," 0"
+"1","
+"
