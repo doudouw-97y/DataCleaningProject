@@ -63,5 +63,5 @@ cname <- gsub("std\\(\\)", "StandardDeviation", cname, perl = TRUE)
 avg_df <- new_mean_std %>% group_by(Subject_ID, Activity_name) %>% summarise_all(mean)
 
 # Step 7
-## Save tidy data set to file
+## Save tidy data set to csv file
 write.csv(avg_df, "tidy_data.csv")
